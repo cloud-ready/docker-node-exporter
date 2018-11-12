@@ -1,0 +1,30 @@
+version: '2.1'
+services:
+  node-exporter:
+    cap_add: # ignored in swarm mode (docker-compose yaml version 3.x)
+    - SYS_TIME # since 0.17
+    command: ${COMMAND:-} # since 0.17, --path.rootfs /host
+    container_name: ${CONTAINER_HOST_NAME:-standalone.node-exporter}
+    #environment:
+    hostname: ${CONTAINER_HOST_NAME:-standalone.node-exporter}
+    labels:
+      deploy.config.commit: ${LABEL_DEPLOY_CONFIG_COMMIT:-unknown}
+      deploy.config.name: ${LABEL_DEPLOY_CONFIG_NAME:-unknown}
+      deploy.config.ref: ${LABEL_DEPLOY_CONFIG_REF:-unknown}
+      deploy.util.commit: ${LABEL_DEPLOY_UTIL_COMMIT:-unknown}
+      deploy.util.ref: ${LABEL_DEPLOY_UTIL_REF:-unknown}
+      instance.name.short: ${LABEL_INSTANCE_NAME_SHORT:-standalone.node-exporter}
+      instance.name: ${LABEL_INSTANCE_NAME:-127.0.0.1/node-exporter/standalone}
+    image: ${IMAGE_PREFIX:-prom/}${IMAGE_NAME:-node-exporter}:${IMAGE_TAG:-v0.16.0}
+    pid: host
+    network_mode: host
+    #networks:
+    #  local-network:
+    #    ipv4_address: ${IPV4_ADDRESS:-172.16.238.90}
+    #    #ipv6_address: ${IPV6_ADDRESS:-2001:3984:3989::90}
+    ports:
+    - "${EXTERNAL_NODE_EXPORTER_9100_PORT:-9100}:9100"
+    #privileged: true
+    restart: always
+    volumes:
+    - /:${HOST_ROOT:-/host:ro} # since 0.17, /host:ro,rslave
